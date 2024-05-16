@@ -2,21 +2,24 @@
 const body = document.querySelector("body");
 const gameContainer = document.querySelector(".game-container");
 const form = document.querySelector("#options");
+const resetBtn = document.querySelector("#reset");
+const startBtn = document.querySelector("#start");
 
-const assets = ["Giraffe.svg", 
-"Illustration - Elephant.svg", 
-"Illustration - Gorilla.svg",
-"Illustration - Hippo.svg",
-"Illustration - Koala.svg",
-"Illustration - Leopard.svg",
-"Illustration - Lion.svg",
-"Panda.svg",
-"Zebra.svg"]
+
+const assets = ["Giraffe.svg",
+    "Illustration - Elephant.svg",
+    "Illustration - Gorilla.svg",
+    "Illustration - Hippo.svg",
+    "Illustration - Koala.svg",
+    "Illustration - Leopard.svg",
+    "Illustration - Lion.svg",
+    "Panda.svg",
+    "Zebra.svg"]
 
 const shuffle = (array) => {
     let currentIndex = array.length;
 
-    while(currentIndex != 0) {
+    while (currentIndex != 0) {
         let randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex--;
 
@@ -25,7 +28,7 @@ const shuffle = (array) => {
 }
 
 const displayCards = (array) => {
-    while(gameContainer.firstChild) {
+    while (gameContainer.firstChild) {
         gameContainer.firstChild.remove();
     }
     array.forEach((card) => {
@@ -40,7 +43,7 @@ const submitListener = (e) => {
     const difficulty = document.querySelector("#difficulty").value;
     const amount = difficulty === "easy" ? 4 : difficulty === "medium" ? 6 : 8;
     const cards = [];
-    for(let i = 0; i < amount; i++) {
+    for (let i = 0; i < amount; i++) {
         const newDiv1 = document.createElement("div");
         const newImg1 = document.createElement("img");
         newImg1.src = "./assets/" + assets[i];
@@ -50,7 +53,7 @@ const submitListener = (e) => {
         const newImg2 = document.createElement("img");
         newImg2.src = "./assets/" + assets[i];
         newDiv2.append(newImg2);
-        cards.push(newDiv2);  
+        cards.push(newDiv2);
         // push to array  
     }
     shuffle(cards);
@@ -60,9 +63,50 @@ const submitListener = (e) => {
 
 form.addEventListener("submit", submitListener);
 
+let startTime;
+let interval;
+let pausedTime = 0;
+//let totalTimePassed;
+
+const startStopWatch = () => {
+    startTime = new Date().getTime() - pausedTime;
+    interval = setInterval(updateStopWatch, 1000);
+}
+
+const updateStopWatch = () => {
+    let currentTime = new Date().getTime();
+    let timeElapsed = currentTime - startTime;
+    let secondsPassed = Math.floor(timeElapsed / 1000) % 60;
+    let minutesPassed = Math.floor(timeElapsed / 1000 / 60) % 60;
+    let hoursPassed = Math.floor(timeElapsed / 1000 / 60 / 60) % 60;
+    let hours = addZero(hoursPassed);
+    let minutes = addZero(minutesPassed);
+    let seconds = addZero(secondsPassed);
+    let timeToDisplay = `${hours} : ${minutes} : ${seconds}`;
+    document.querySelector("#watch").innerText = timeToDisplay;
+}
+
+const stopWatch = () => {
+    clearInterval(interval);
+    pausedTime = new Date().getTime() - startTime;
+    interval = null;
+}
+
+const resetStopWatch = () => {
+    stopWatch();
+    pausedTime = 0;
+    document.querySelector("#watch").innerText = "0:00:00";
+}
+
+function addZero(num) {
+    return (num < 10 ? "0" : "") + num;
+}
+
+startBtn.addEventListener("click", startStopWatch);
+resetBtn.addEventListener("click", resetStopWatch);
 
 document.addEventListener("DOMContentLoaded", () => {
-    
+
 })
 
 
