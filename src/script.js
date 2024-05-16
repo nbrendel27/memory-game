@@ -36,6 +36,16 @@ const displayCards = (array) => {
     })
 }
 
+const flipCard = (e) => {
+    if(e.target.parentNode.classList.contains("front") || e.target.parentNode.classList.contains("back")) {
+        e.target.parentNode.parentNode.classList.toggle("flipCard");
+    }else if(e.target.parentNode.classList.contains("card")) {
+        e.target.parentNode.classList.toggle("flipCard");
+    }else if(e.target.classList.contains("card")) {
+        e.target.classList.toggle("flipCard");
+    }
+    
+};
 
 const submitListener = (e) => {
     // console.log("here")
@@ -44,24 +54,54 @@ const submitListener = (e) => {
     const amount = difficulty === "easy" ? 4 : difficulty === "medium" ? 6 : 8;
     const cards = [];
     for (let i = 0; i < amount; i++) {
-        const newDiv1 = document.createElement("div");
-        const newImg1 = document.createElement("img");
-        newImg1.src = "./assets/" + assets[i];
-        newDiv1.append(newImg1);
-        cards.push(newDiv1);
-        const newDiv2 = document.createElement("div");
-        const newImg2 = document.createElement("img");
-        newImg2.src = "./assets/" + assets[i];
-        newDiv2.append(newImg2);
-        cards.push(newDiv2);
+        const containerDiv1 = document.createElement("div");
+        const frontDiv1 = document.createElement("div");
+        const frontImg1 = document.createElement("img");
+        const backDiv1 = document.createElement("div");
+        const backImg1 = document.createElement("img");
+        backImg1.src = "./assets/" + assets[i];
+        frontImg1.src = "./assets/icon _jail_.svg";
+        containerDiv1.classList.add("card");
+        frontDiv1.classList.add("front");
+        backDiv1.classList.add("back");
+        frontDiv1.append(frontImg1);
+        backDiv1.append(backImg1);
+        containerDiv1.append(frontDiv1, backDiv1);
+        containerDiv1.addEventListener("click", flipCard);
+        cards.push(containerDiv1);
+
+
+        const containerDiv2 = document.createElement("div");
+        const frontDiv2 = document.createElement("div");
+        const frontImg2 = document.createElement("img");
+        const backDiv2 = document.createElement("div");
+        const backImg2 = document.createElement("img");
+        backImg2.src = "./assets/" + assets[i];
+        frontImg2.src = "./assets/icon _jail_.svg";
+        containerDiv2.classList.add("card");
+        frontDiv2.classList.add("front");
+        backDiv2.classList.add("back");
+        frontDiv2.append(frontImg2);
+        backDiv2.append(backImg2);
+        containerDiv2.append(frontDiv2, backDiv2);
+        containerDiv2.addEventListener("click", flipCard);
+        cards.push(containerDiv2);
         // push to array  
     }
     shuffle(cards);
     displayCards(cards);
     // gameContainer.append(newDiv1, newDiv2);
+    
 }
 
 form.addEventListener("submit", submitListener);
+
+
+
+
+
+
+
 
 let startTime;
 let interval;
