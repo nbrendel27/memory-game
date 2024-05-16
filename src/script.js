@@ -4,6 +4,9 @@ const gameContainer = document.querySelector(".game-container");
 const form = document.querySelector("#options");
 const resetBtn = document.querySelector("#reset");
 const startBtn = document.querySelector("#start");
+let flippedCards;
+let score = 0;
+let amount;
 
 
 const assets = ["Giraffe.svg",
@@ -37,21 +40,53 @@ const displayCards = (array) => {
 }
 
 const flipCard = (e) => {
-    if(e.target.parentNode.classList.contains("front") || e.target.parentNode.classList.contains("back")) {
+    if (e.target.parentNode.classList.contains("front") || e.target.parentNode.classList.contains("back")) {
         e.target.parentNode.parentNode.classList.toggle("flipCard");
-    }else if(e.target.parentNode.classList.contains("card")) {
+    } else if (e.target.parentNode.classList.contains("card")) {
         e.target.parentNode.classList.toggle("flipCard");
-    }else if(e.target.classList.contains("card")) {
+    } else if (e.target.classList.contains("card")) {
         e.target.classList.toggle("flipCard");
     }
-    
+    flippedCards = document.querySelectorAll(".flipCard");
+    console.log(flippedCards.length)
+    if (flippedCards.length === 2) {
+        matchCards();
+    } else {
+        flippedCards = [];
+    }
 };
+
+const matchCards = () => {
+    firstImg = flippedCards[0].lastChild;
+    console.dir(firstImg)
+    secondImg = flippedCards[1].lastChild
+    firstImgNum = flippedCards[0].lastChild.firstChild.dataset.index;
+    secondImgNum = flippedCards[1].lastChild.firstChild.dataset.index;
+    if (firstImgNum === secondImgNum) {
+        score++;
+        setTimeout(() => { hideCard(firstImg) }, 2000);
+        setTimeout(() => { hideCard(secondImg) }, 2000);
+    } else {
+        setTimeout(() => { closeCard(flippedCards[0]) }, 2000);
+        setTimeout(() => { closeCard(flippedCards[1]) }, 2000);
+    }
+}
+const hideCard = (img) => {
+    console.dir(img);
+    img.parentNode.classList.remove("flipCard");
+    img.classList.add("hide");
+    img.previousSibling.classList.add("hide");
+}
+
+const closeCard = (obj) => {
+    obj.classList.remove("flipCard");
+}
 
 const submitListener = (e) => {
     // console.log("here")
     e.preventDefault();
     const difficulty = document.querySelector("#difficulty").value;
-    const amount = difficulty === "easy" ? 4 : difficulty === "medium" ? 6 : 8;
+    amount = difficulty === "easy" ? 4 : difficulty === "medium" ? 6 : 8;
     const cards = [];
     for (let i = 0; i < amount; i++) {
         const containerDiv1 = document.createElement("div");
@@ -60,7 +95,9 @@ const submitListener = (e) => {
         const backDiv1 = document.createElement("div");
         const backImg1 = document.createElement("img");
         backImg1.src = "./assets/" + assets[i];
+        backImg1.setAttribute("data-index", i);
         frontImg1.src = "./assets/icon _jail_.svg";
+        frontImg1.setAttribute("data-index", i);
         containerDiv1.classList.add("card");
         frontDiv1.classList.add("front");
         backDiv1.classList.add("back");
@@ -68,6 +105,7 @@ const submitListener = (e) => {
         backDiv1.append(backImg1);
         containerDiv1.append(frontDiv1, backDiv1);
         containerDiv1.addEventListener("click", flipCard);
+        //console.dir(containerDiv1);
         cards.push(containerDiv1);
 
 
@@ -77,7 +115,9 @@ const submitListener = (e) => {
         const backDiv2 = document.createElement("div");
         const backImg2 = document.createElement("img");
         backImg2.src = "./assets/" + assets[i];
+        backImg2.setAttribute("data-index", i);
         frontImg2.src = "./assets/icon _jail_.svg";
+        frontImg2.setAttribute("data-index", i);
         containerDiv2.classList.add("card");
         frontDiv2.classList.add("front");
         backDiv2.classList.add("back");
@@ -91,17 +131,13 @@ const submitListener = (e) => {
     shuffle(cards);
     displayCards(cards);
     // gameContainer.append(newDiv1, newDiv2);
-    
+
 }
 
 form.addEventListener("submit", submitListener);
 
 
-
-
-
-
-
+//Timer functionality
 
 let startTime;
 let interval;
@@ -111,6 +147,13 @@ let pausedTime = 0;
 const startStopWatch = () => {
     startTime = new Date().getTime() - pausedTime;
     interval = setInterval(updateStopWatch, 1000);
+    setInterval(checkScore, 1000);
+}
+
+const checkScore = () => {
+    if (score === amount) {
+        resetStopWatch();
+    }
 }
 
 const updateStopWatch = () => {
@@ -136,6 +179,7 @@ const resetStopWatch = () => {
     stopWatch();
     pausedTime = 0;
     document.querySelector("#watch").innerText = "0:00:00";
+    score = 0;
 }
 
 function addZero(num) {
