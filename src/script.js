@@ -172,6 +172,7 @@ const startStopWatch = () => {
     interval = setInterval(updateStopWatch, 1000);
     scoreChecker = setInterval(checkScore, 1000);
     document.getElementById("welcome-msg").style.display = "none";
+    document.querySelector(".leaderboard-container").style.display = "none";
 }
 
 const checkScore = () => {
@@ -188,7 +189,7 @@ const checkScore = () => {
             // localStorage.setItem("name-"+hash, name);
             // localStorage.setItem("time-"+hash, timeToDisplay);
             // localStorage.setItem("difficulty-"+hash, difficulty);
-            const leaderboard = document.querySelector("leaderboard");
+            // const leaderboard = document.querySelector("leaderboard");
             const row = document.createElement("tr");
             const name1 = document.createElement("td");
             const time1 = document.createElement("td");
@@ -231,6 +232,7 @@ const resetStopWatch = () => {
     while(gameContainer.firstChild) {
         gameContainer.firstChild.remove();
     }
+    document.querySelector(".leaderboard-container").style.display = "flex";
 }
 
 function addZero(num) {
@@ -240,7 +242,7 @@ function addZero(num) {
 startBtn.addEventListener("click", startStopWatch);
 resetBtn.addEventListener("click", resetStopWatch);
 
-const leaderboard = document.querySelector("leaderboard");
+const leaderboard = document.querySelector("#leaderboard");
 
 document.addEventListener("DOMContentLoaded", () => {
     for(let i = 0; i < localStorage.length; i++) {
