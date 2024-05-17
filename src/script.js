@@ -40,6 +40,10 @@ const displayCards = (array) => {
 }
 
 const flipCard = (e) => {
+    flippedCards = document.querySelectorAll(".flipCard");
+    if(flippedCards.length === 2) {
+        return;
+    }
     if (e.target.parentNode.classList.contains("front") || e.target.parentNode.classList.contains("back")) {
         e.target.parentNode.parentNode.classList.toggle("flipCard");
     } else if (e.target.parentNode.classList.contains("card")) {
@@ -142,6 +146,7 @@ form.addEventListener("submit", submitListener);
 let startTime;
 let interval;
 let pausedTime = 0;
+let timeToDisplay;
 //let totalTimePassed;
 
 const startStopWatch = () => {
@@ -152,6 +157,17 @@ const startStopWatch = () => {
 
 const checkScore = () => {
     if (score === amount) {
+        updateStopWatch();
+        const victory = document.createElement("div");
+        victory.classList.add("victory");
+        victory.textContent = `Congradulations!!! Your time was ${timeToDisplay}`;
+        const closeBtn = document.createElement("button");
+        closeBtn.textContent = "Close";
+        closeBtn.addEventListener("click", () => {
+            victory.style.display = "none";
+        });
+        victory.append(closeBtn);
+        body.append(victory);
         resetStopWatch();
     }
 }
@@ -165,7 +181,7 @@ const updateStopWatch = () => {
     let hours = addZero(hoursPassed);
     let minutes = addZero(minutesPassed);
     let seconds = addZero(secondsPassed);
-    let timeToDisplay = `${hours} : ${minutes} : ${seconds}`;
+    timeToDisplay = `${hours} : ${minutes} : ${seconds}`;
     document.querySelector("#watch").innerText = timeToDisplay;
 }
 
