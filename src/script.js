@@ -41,7 +41,7 @@ const displayCards = (array) => {
 
 const flipCard = (e) => {
     flippedCards = document.querySelectorAll(".flipCard");
-    if(flippedCards.length === 2) {
+    if (flippedCards.length === 2) {
         return;
     }
     if (e.target.parentNode.classList.contains("front") || e.target.parentNode.classList.contains("back")) {
@@ -147,12 +147,13 @@ let startTime;
 let interval;
 let pausedTime = 0;
 let timeToDisplay;
+let scoreChecker;
 //let totalTimePassed;
 
 const startStopWatch = () => {
     startTime = new Date().getTime() - pausedTime;
     interval = setInterval(updateStopWatch, 1000);
-    setInterval(checkScore, 1000);
+    scoreChecker = setInterval(checkScore, 1000);
 }
 
 const checkScore = () => {
@@ -196,6 +197,7 @@ const resetStopWatch = () => {
     pausedTime = 0;
     document.querySelector("#watch").innerText = "0:00:00";
     score = 0;
+    clearInterval(scoreChecker);
 }
 
 function addZero(num) {
