@@ -154,6 +154,7 @@ const startStopWatch = () => {
     startTime = new Date().getTime() - pausedTime;
     interval = setInterval(updateStopWatch, 1000);
     scoreChecker = setInterval(checkScore, 1000);
+    document.getElementById("welcome-msg").style.display = "none";
 }
 
 const checkScore = () => {
@@ -161,7 +162,7 @@ const checkScore = () => {
         updateStopWatch();
         const victory = document.createElement("div");
         victory.classList.add("victory");
-        victory.textContent = `Congradulations!!! Your time was ${timeToDisplay}`;
+        victory.textContent = `Congradulations!!! \n Your time was ${timeToDisplay}`;
         const closeBtn = document.createElement("button");
         closeBtn.textContent = "Close";
         closeBtn.addEventListener("click", () => {

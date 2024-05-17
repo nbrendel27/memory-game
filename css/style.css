@@ -3,8 +3,12 @@
   font-size: large;
 }
 
+body {
+  margin: 0;
+}
+
 header {
-  background-color: #f05d23;
+  background-color: #f37240;
   text-align: center;
   padding: 10px;
 }
@@ -100,11 +104,38 @@ button:active {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 70%;
-  height: 50%;
-  background-color: blue;
-  color: white;
+  height: fit-content;
+  background-color: #c5d86d;
+  color: rgb(12, 12, 12);
   border: 2px solid black;
   border-radius: 20px;
+  text-align: center;
+  font-family: "Chelsea Market";
+  font-size: larger;
+  padding: 30px 0px 30px 0px;
+}
+
+#welcome {
+  font-family: "Chelsea Market";
+  font-size: larger;
+  color: #f05d23;
+}
+
+#welcome-msg p {
+  text-align: center;
+  padding: 20px;
+  font-size: 30px;
+}
+
+#welcome-msg {
+  background-color: #e4e6c3;
+  padding: 20px;
+  margin: 30px 30px 0 30px;
+  border: 1px solid #261c15;
+}
+
+.victory button {
+  margin-top: 20px;
 }
 
 .game-container {
