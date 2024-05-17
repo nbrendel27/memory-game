@@ -1,6 +1,6 @@
 
 const body = document.querySelector("body");
-const gameContainer = document.querySelector(".game-container");
+let gameContainer = document.querySelector(".game-container");
 const form = document.querySelector("#options");
 const resetBtn = document.querySelector("#reset");
 const startBtn = document.querySelector("#start");
@@ -78,6 +78,8 @@ const matchCards = () => {
 const hideCard = (img) => {
     console.dir(img);
     img.parentNode.classList.remove("flipCard");
+    console.dir(img.parentNode);
+    img.parentNode.style.backgroundColor = "transparent";
     img.classList.add("hide");
     img.previousSibling.classList.add("hide");
 }
@@ -86,22 +88,36 @@ const closeCard = (obj) => {
     obj.classList.remove("flipCard");
 }
 
+let bucket = []
+
+const randomSample = () => {
+    const randomIndex = Math.floor(Math.random()*bucket.length);
+    return bucket.splice(randomIndex, 1)[0];
+}
+
+let difficulty = "";
+
 const submitListener = (e) => {
-    // console.log("here")
+    console.dir(e.target)
     e.preventDefault();
-    const difficulty = document.querySelector("#difficulty").value;
+
+    for(let j = 0; j < assets.length; j++) {
+        bucket.push(j);
+    }
+    difficulty = document.querySelector("#difficulty").value;
     amount = difficulty === "easy" ? 4 : difficulty === "medium" ? 6 : 8;
     const cards = [];
     for (let i = 0; i < amount; i++) {
+        const randomIndex = randomSample();
         const containerDiv1 = document.createElement("div");
         const frontDiv1 = document.createElement("div");
         const frontImg1 = document.createElement("img");
         const backDiv1 = document.createElement("div");
         const backImg1 = document.createElement("img");
-        backImg1.src = "./assets/" + assets[i];
-        backImg1.setAttribute("data-index", i);
+        backImg1.src = "./assets/" + assets[randomIndex];
+        backImg1.setAttribute("data-index", randomIndex);
         frontImg1.src = "./assets/icon _jail_.svg";
-        frontImg1.setAttribute("data-index", i);
+        frontImg1.setAttribute("data-index", randomIndex);
         containerDiv1.classList.add("card");
         frontDiv1.classList.add("front");
         backDiv1.classList.add("back");
@@ -118,10 +134,10 @@ const submitListener = (e) => {
         const frontImg2 = document.createElement("img");
         const backDiv2 = document.createElement("div");
         const backImg2 = document.createElement("img");
-        backImg2.src = "./assets/" + assets[i];
-        backImg2.setAttribute("data-index", i);
+        backImg2.src = "./assets/" + assets[randomIndex];
+        backImg2.setAttribute("data-index", randomIndex);
         frontImg2.src = "./assets/icon _jail_.svg";
-        frontImg2.setAttribute("data-index", i);
+        frontImg2.setAttribute("data-index", randomIndex);
         containerDiv2.classList.add("card");
         frontDiv2.classList.add("front");
         backDiv2.classList.add("back");
@@ -132,6 +148,7 @@ const submitListener = (e) => {
         cards.push(containerDiv2);
         // push to array  
     }
+    bucket = [];
     shuffle(cards);
     displayCards(cards);
     // gameContainer.append(newDiv1, newDiv2);
@@ -160,16 +177,27 @@ const startStopWatch = () => {
 const checkScore = () => {
     if (score === amount) {
         updateStopWatch();
-        const victory = document.createElement("div");
-        victory.classList.add("victory");
-        victory.textContent = `Congradulations!!! \n Your time was ${timeToDisplay}`;
-        const closeBtn = document.createElement("button");
-        closeBtn.textContent = "Close";
-        closeBtn.addEventListener("click", () => {
+        const victory = document.querySelector(".victory");
+        victory.style.display = "flex";
+        victory.firstChild.textContent = `Congratulations! You freed all the animals in ${timeToDisplay}`;
+        victory.addEventListener("submit", (e) => {
+            e.preventDefault();
             victory.style.display = "none";
+            const name = document.querySelector("#name").value;
+            // const hash = Math.random();
+            // localStorage.setItem("name-"+hash, name);
+            // localStorage.setItem("time-"+hash, timeToDisplay);
+            // localStorage.setItem("difficulty-"+hash, difficulty);
+            const leaderboard = document.querySelector("leaderboard");
+            const row = document.createElement("tr");
+            const name1 = document.createElement("td");
+            const time1 = document.createElement("td");
+            name1.textContent = name;
+            time1.textContent = timeToDisplay;
+            row.append(name1, time1);
+            leaderboard.append(row);
+            localStorage.setItem(name, timeToDisplay);
         });
-        victory.append(closeBtn);
-        body.append(victory);
         resetStopWatch();
     }
 }
@@ -183,7 +211,7 @@ const updateStopWatch = () => {
     let hours = addZero(hoursPassed);
     let minutes = addZero(minutesPassed);
     let seconds = addZero(secondsPassed);
-    timeToDisplay = `${hours} : ${minutes} : ${seconds}`;
+    timeToDisplay = `${hours}:${minutes}:${seconds}`;
     document.querySelector("#watch").innerText = timeToDisplay;
 }
 
@@ -199,6 +227,10 @@ const resetStopWatch = () => {
     document.querySelector("#watch").innerText = "0:00:00";
     score = 0;
     clearInterval(scoreChecker);
+    gameContainer = document.querySelector(".game-container");
+    while(gameContainer.firstChild) {
+        gameContainer.firstChild.remove();
+    }
 }
 
 function addZero(num) {
@@ -208,8 +240,20 @@ function addZero(num) {
 startBtn.addEventListener("click", startStopWatch);
 resetBtn.addEventListener("click", resetStopWatch);
 
-document.addEventListener("DOMContentLoaded", () => {
+const leaderboard = document.querySelector("leaderboard");
 
+document.addEventListener("DOMContentLoaded", () => {
+    for(let i = 0; i < localStorage.length; i++) {
+        const row = document.createElement("tr");
+        const name = localStorage.key(i);
+        const time = localStorage.getItem(name);
+        const name1 = document.createElement("td");
+        const time1 = document.createElement("td");
+        name1.textContent = name;
+        time1.textContent = time;
+        row.append(name1, time1);
+        leaderboard.append(row);
+    }
 })
 
 
