@@ -1,9 +1,72 @@
+* {
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  font-size: large;
+}
+
+header {
+  background-color: #f05d23;
+  text-align: center;
+  padding: 10px;
+}
+
+h1 {
+  font-family: "Chelsea Market";
+  color: #e4e6c3;
+  text-shadow: 2px 2px black;
+  font-size: 40px;
+}
+
+#watch {
+  font-family: "Chelsea Market";
+  text-align: center;
+  margin: 20px;
+  padding: 10px;
+  font-size: 30px;
+}
+
+#options {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#options select {
+  width: 300px;
+  margin: 10px;
+  border-radius: 10px;
+  background-color: #e4e6c3;
+  padding: 5px;
+}
+
+button {
+  width: 200px;
+  margin: 5px;
+  padding: 10px;
+  border-radius: 15px;
+  color: white;
+  background-color: #261c15;
+}
+
+button:active {
+  background-color: #c5d86d;
+}
+
 .card {
   position: relative;
   transform-style: preserve-3d;
   transition: all 0.8s ease;
-  width: 250px;
-  height: 250px;
+  width: 200px;
+  height: 200px;
+}
+
+.card img {
+  width: 140px;
+  height: 140px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .front {
@@ -31,7 +94,12 @@
   opacity: 0;
 }
 
-/* .game-container {
+.game-container {
   display: flex;
   flex-direction: row;
-} */
+  flex-wrap: wrap;
+  padding: 20px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
