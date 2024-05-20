@@ -152,6 +152,7 @@ const submitListener = (e) => {
     bucket = [];
     shuffle(cards);
     displayCards(cards);
+    document.querySelector("#watch").innerText = difficulty === "easy" ? "00:30" : difficulty ==="medium" ? "00:45" : "01:00";
     // gameContainer.append(newDiv1, newDiv2);
 
 
@@ -179,6 +180,7 @@ const startStopWatch = () => {
     document.querySelector(".leaderboard-container").style.display = "none";
 }
 
+
 const checkScore = () => {
     if (cardsFlipped === amount) {
         updateStopWatch();
@@ -194,23 +196,32 @@ const checkScore = () => {
             // localStorage.setItem("time-"+hash, timeToDisplay);
             // localStorage.setItem("difficulty-"+hash, difficulty);
             // const leaderboard = document.querySelector("leaderboard");
-            const row = document.createElement("tr");
-            const name1 = document.createElement("td");
-            const time1 = document.createElement("td");
-            name1.textContent = name;
-            time1.textContent = secondsPassed;
-            row.append(name1, time1);
-            leaderboard.append(row);
+            // const row = document.createElement("tr");
+            // const name1 = document.createElement("td");
+            // const time1 = document.createElement("td");
+            // name1.textContent = name;
+            // time1.textContent = secondsPassed;
+            // row.append(name1, time1);
+            // leaderboard.append(row);
             if (difficulty === "easy") {
-                score = secondsPassed * 10;
+                score = (30-secondsPassed) * 10;
             } else if (difficulty === "medium") {
-                score = secondsPassed * 10 + 10;
+                score = (45-secondsPassed) * 10 + 10;
             } else {
-                score = secondsPassed * 10 + 20;
+                score = (60-secondsPassed) * 10 + 20;
             }
-            let playerScoreAndDifficulty = { score, difficulty };
-            localStorage.setItem(name, JSON.stringify(playerScoreAndDifficulty));
-            setTimeout(function () { window.location.reload(); }, 10)
+            console.log(score);
+            if(localStorage.getItem(name) === null) {
+                let playerScoreAndDifficulty = { score, difficulty };
+                localStorage.setItem(name, JSON.stringify(playerScoreAndDifficulty)); 
+            }else {
+                const stats = JSON.parse(localStorage.getItem(name));
+                if(stats.score < score) {
+                    let playerScoreAndDifficulty = { score, difficulty };
+                    localStorage.setItem(name, JSON.stringify(playerScoreAndDifficulty)); 
+                }
+            }
+            setTimeout(function () { window.location.reload(); }, 10);
         });
         resetStopWatch();
     }
@@ -286,7 +297,7 @@ document.addEventListener("DOMContentLoaded", () => {
         playerStats.push({ name: name, score: stats.score, difficulty: stats.difficulty });
     }
 
-    playerStats = playerStats.sort((stat1, stat2) => { return stat1.score - stat2.score })
+    playerStats = playerStats.sort((stat1, stat2) => { return stat2.score - stat1.score })
     console.log(playerStats);
 
     playerStats.forEach((stat) => {
