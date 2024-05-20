@@ -5,8 +5,9 @@ const form = document.querySelector("#options");
 const resetBtn = document.querySelector("#reset");
 const startBtn = document.querySelector("#start");
 let flippedCards;
-let score = 0;
+let cardsFlipped = 0;
 let amount;
+let score;
 
 
 const assets = ["Giraffe.svg",
@@ -67,12 +68,12 @@ const matchCards = () => {
     firstImgNum = flippedCards[0].lastChild.firstChild.dataset.index;
     secondImgNum = flippedCards[1].lastChild.firstChild.dataset.index;
     if (firstImgNum === secondImgNum) {
-        score++;
-        setTimeout(() => { hideCard(firstImg) }, 2000);
-        setTimeout(() => { hideCard(secondImg) }, 2000);
+        cardsFlipped++;
+        setTimeout(() => { hideCard(firstImg) }, 1000);
+        setTimeout(() => { hideCard(secondImg) }, 1000);
     } else {
-        setTimeout(() => { closeCard(flippedCards[0]) }, 2000);
-        setTimeout(() => { closeCard(flippedCards[1]) }, 2000);
+        setTimeout(() => { closeCard(flippedCards[0]) }, 1000);
+        setTimeout(() => { closeCard(flippedCards[1]) }, 1000);
     }
 }
 const hideCard = (img) => {
@@ -91,7 +92,7 @@ const closeCard = (obj) => {
 let bucket = []
 
 const randomSample = () => {
-    const randomIndex = Math.floor(Math.random()*bucket.length);
+    const randomIndex = Math.floor(Math.random() * bucket.length);
     return bucket.splice(randomIndex, 1)[0];
 }
 
@@ -101,7 +102,7 @@ const submitListener = (e) => {
     console.dir(e.target)
     e.preventDefault();
 
-    for(let j = 0; j < assets.length; j++) {
+    for (let j = 0; j < assets.length; j++) {
         bucket.push(j);
     }
     difficulty = document.querySelector("#difficulty").value;
@@ -153,9 +154,11 @@ const submitListener = (e) => {
     displayCards(cards);
     // gameContainer.append(newDiv1, newDiv2);
 
+
 }
 
 form.addEventListener("submit", submitListener);
+//form.addEventListener("submit", setTimeout(function () { window.location.reload(); }, 10));
 
 
 //Timer functionality
@@ -165,6 +168,7 @@ let interval;
 let pausedTime = 0;
 let timeToDisplay;
 let scoreChecker;
+let secondsPassed;
 //let totalTimePassed;
 
 const startStopWatch = () => {
@@ -176,11 +180,11 @@ const startStopWatch = () => {
 }
 
 const checkScore = () => {
-    if (score === amount) {
+    if (cardsFlipped === amount) {
         updateStopWatch();
         const victory = document.querySelector(".victory");
         victory.style.display = "flex";
-        victory.firstChild.textContent = `Congratulations! You freed all the animals in ${timeToDisplay}`;
+        victory.firstChild.textContent = `Congratulations! You freed all the animals in ${secondsPassed} seconds`;
         victory.addEventListener("submit", (e) => {
             e.preventDefault();
             victory.style.display = "none";
@@ -194,10 +198,19 @@ const checkScore = () => {
             const name1 = document.createElement("td");
             const time1 = document.createElement("td");
             name1.textContent = name;
-            time1.textContent = timeToDisplay;
+            time1.textContent = secondsPassed;
             row.append(name1, time1);
             leaderboard.append(row);
-            localStorage.setItem(name, timeToDisplay);
+            if (difficulty === "easy") {
+                score = secondsPassed * 10;
+            } else if (difficulty === "medium") {
+                score = secondsPassed * 10 + 10;
+            } else {
+                score = secondsPassed * 10 + 20;
+            }
+            let playerScoreAndDifficulty = { score, difficulty };
+            localStorage.setItem(name, JSON.stringify(playerScoreAndDifficulty));
+            setTimeout(function () { window.location.reload(); }, 10)
         });
         resetStopWatch();
     }
@@ -206,13 +219,32 @@ const checkScore = () => {
 const updateStopWatch = () => {
     let currentTime = new Date().getTime();
     let timeElapsed = currentTime - startTime;
-    let secondsPassed = Math.floor(timeElapsed / 1000) % 60;
+    secondsPassed = Math.floor(timeElapsed / 1000) % 60;
     let minutesPassed = Math.floor(timeElapsed / 1000 / 60) % 60;
     let hoursPassed = Math.floor(timeElapsed / 1000 / 60 / 60) % 60;
     let hours = addZero(hoursPassed);
     let minutes = addZero(minutesPassed);
     let seconds = addZero(secondsPassed);
-    timeToDisplay = `${hours}:${minutes}:${seconds}`;
+    let playerTime;
+    let timeTaken;
+    if (difficulty === "easy") {
+        playerTime = 30;
+        timeTaken = playerTime - secondsPassed;
+    } else if (difficulty === "medium") {
+        playerTime = 45;
+        timeTaken = playerTime - secondsPassed;
+    } else {
+        playerTime = 60;
+        timeTaken = playerTime - (secondsPassed + (minutesPassed * 60));
+        console.log(timeTaken);
+    }
+
+    if (timeTaken === 0) {
+        alert("Oops! You're caught by the zoo keepers. Play again?")
+        resetStopWatch();
+        return;
+    }
+    timeToDisplay = `${minutes}:${timeTaken}`;
     document.querySelector("#watch").innerText = timeToDisplay;
 }
 
@@ -225,11 +257,11 @@ const stopWatch = () => {
 const resetStopWatch = () => {
     stopWatch();
     pausedTime = 0;
-    document.querySelector("#watch").innerText = "0:00:00";
-    score = 0;
+    document.querySelector("#watch").innerText = "00:00";
+    cardsFlipped = 0;
     clearInterval(scoreChecker);
     gameContainer = document.querySelector(".game-container");
-    while(gameContainer.firstChild) {
+    while (gameContainer.firstChild) {
         gameContainer.firstChild.remove();
     }
     document.querySelector(".leaderboard-container").style.display = "flex";
@@ -244,19 +276,34 @@ resetBtn.addEventListener("click", resetStopWatch);
 
 const leaderboard = document.querySelector("#leaderboard");
 
+let playerStats = [];
+
 document.addEventListener("DOMContentLoaded", () => {
-    for(let i = 0; i < localStorage.length; i++) {
-        const row = document.createElement("tr");
+
+    for (let i = 0; i < localStorage.length; i++) {
         const name = localStorage.key(i);
-        const time = localStorage.getItem(name);
+        const stats = JSON.parse(localStorage.getItem(name));
+        playerStats.push({ name: name, score: stats.score, difficulty: stats.difficulty });
+    }
+
+    playerStats = playerStats.sort((stat1, stat2) => { return stat1.score - stat2.score })
+    console.log(playerStats);
+
+    playerStats.forEach((stat) => {
+        const row = document.createElement("tr");
         const name1 = document.createElement("td");
         const time1 = document.createElement("td");
-        name1.textContent = name;
-        time1.textContent = time;
-        row.append(name1, time1);
-        leaderboard.append(row);
-    }
-})
+        const difficulty1 = document.createElement("td");
+
+        name1.textContent = stat.name;
+        time1.textContent = stat.score;
+        difficulty1.textContent = stat.difficulty;
+        row.append(name1, time1, difficulty1);
+        leaderboard.append(row)
+    })
+
+
+}, { once: true })
 
 
 
