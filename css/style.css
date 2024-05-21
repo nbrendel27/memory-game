@@ -13,7 +13,7 @@ main {
   /*background-image: url("../assets/7249399.jpg");
   background-repeat: no-repeat;
   background-size: contain;*/
-  height: 100vh;
+  height: 90vh;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -40,6 +40,8 @@ header {
   background-color: #f37240;
   text-align: center;
   padding: 10px;
+  z-index: 2;
+  position: relative;
 }
 
 h1 {
